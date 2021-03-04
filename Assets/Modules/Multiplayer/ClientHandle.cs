@@ -18,10 +18,13 @@ public class ClientHandle : MonoBehaviour
         Client.instance.udp.Connect(((IPEndPoint)Client.instance.tcp.socket.Client.LocalEndPoint).Port);
     }
 
-    internal static void UdpTest(Packet packet)
+    public static void SpawnPlayer(Packet _packet)
     {
-        var msg = packet.ReadString();
-        Debug.Log($"Recieved packet via UDP. Contains Message: {msg}");
-        ClientSend.UDPTestRecieve();
+        int id = _packet.ReadInt();
+        string userName = _packet.ReadString();
+        Vector3 _position = _packet.ReadVector3();
+        Quaternion _rotation = _packet.ReadQuaternion();
+
+        GameManager.instance.SpawnPlayer(id, userName, _position, _rotation);
     }
 }

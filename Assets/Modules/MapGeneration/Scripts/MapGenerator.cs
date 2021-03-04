@@ -6,18 +6,6 @@ namespace MapGeneration
 {
     public class MapGenerator : MonoBehaviour
     {
-        public int MapSize
-        {
-            get { return m_mapSize; }
-            set
-            {
-                if (value != m_mapSize)
-                {
-                    m_mapSize = value;
-                }
-            }
-        }
-
         public MapTerrain[,] map;
 
         public MapTerrain m_terrain;
@@ -27,7 +15,7 @@ namespace MapGeneration
         [Range(1f, 10f)]
         public int HeightAdjustment;
 
-        private int m_mapSize;
+        public int MapSize;
 
         private void Awake()
         {
@@ -43,7 +31,7 @@ namespace MapGeneration
             {
                 var x = (int)Mathf.Floor(i / MapSize);
                 var z = (int)Mathf.Floor(i % MapSize);
-                map[x, z] = Instantiate(m_terrain, new Vector3(x, Mathf.Floor(heigths[x, z] * 10) / 2, z), Quaternion.identity);
+                map[x, z] = Instantiate(m_terrain, new Vector3(x, Mathf.Floor(heigths[x, z] * 10) / 2, z) + transform.position, Quaternion.identity);
             }
         }
     }

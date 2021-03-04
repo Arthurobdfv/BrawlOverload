@@ -11,6 +11,8 @@ public class PlayerController : MonoBehaviour
     [Range(0.0f, 50.0f)]
     public float Gravity;
 
+    public PlayerManager m_manager;
+
     public GroundChecker m_footSensor;
     public bool m_isGrounded;
 
@@ -21,6 +23,8 @@ public class PlayerController : MonoBehaviour
     {
         m_controller = GetComponent<CharacterController>() ?? throw new MissingComponentException(nameof(m_controller));
         m_footSensor = GetComponentInChildren<GroundChecker>() ?? throw new MissingComponentException(nameof(m_footSensor));
+        m_manager = GetComponent<PlayerManager>() ?? throw new MissingComponentException(nameof(m_manager));
+        if (m_manager.id != Client.instance.myId) Destroy(this);
     }
 
     private void Update()

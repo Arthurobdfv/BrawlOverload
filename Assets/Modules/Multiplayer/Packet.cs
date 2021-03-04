@@ -1,20 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using UnityEngine;
 
 namespace GameServer
 {
     public enum ServerPackets
     {
         welcome = 1,
-        udpTest
+        spawnPlayer,
+        playerPosition,
+        playerRotation
     }
 
     /// <summary>Sent from client to server.</summary>
     public enum ClientPackets
     {
         welcomeReceived = 1,
-        udpTestRecieved
+        udpTestRecieved,
+        playerPositionRecieved,
+        playerRotationRecieved
     }
 
     public class Packet : IDisposable
@@ -157,6 +162,19 @@ namespace GameServer
         {
             Write(_value.Length); // Add the length of the string to the packet
             buffer.AddRange(Encoding.ASCII.GetBytes(_value)); // Add the string itself
+        }
+        public void Write(Vector3 _value)
+        {
+            Write(_value.x); // Add the length of the string to the packet
+            Write(_value.y); // Add the length of the string to the packet
+            Write(_value.z); // Add the length of the string to the packet
+        }
+        public void Write(Quaternion _value)
+        {
+            Write(_value.x); // Add the length of the string to the packet
+            Write(_value.y); // Add the length of the string to the packet
+            Write(_value.z); // Add the length of the string to the packet
+            Write(_value.w);
         }
         #endregion
 
@@ -328,6 +346,16 @@ namespace GameServer
             {
                 throw new Exception("Could not read value of type 'string'!");
             }
+        }
+        
+        public Vector3 ReadVector3(bool _moveReadPos = true)
+        {
+            return new Vector3(ReadFloat(_moveReadPos), ReadFloat(_moveReadPos), ReadFloat(_moveReadPos));
+        }
+
+        public Quaternion ReadQuaternion(bool _moveReadPos = true)
+        {
+            return new Quaternion(ReadFloat(_moveReadPos), ReadFloat(_moveReadPos), ReadFloat(_moveReadPos), ReadFloat(_moveReadPos));
         }
         #endregion
 

@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using BrawlServer;
+using GameClient;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,6 +15,10 @@ public class GameManager : MonoBehaviour
     {
         if (instance == null) instance = this;
         else if (instance != this) Destroy(this);
+
+        Client._sender = new BrawlClientSender();
+        Client._handler = new BrawlClientHandler();
+        Client.instance = new Client();
     }
 
     public void SpawnPlayer(int _id, string _userName, Vector3 _position, Quaternion _rotation)

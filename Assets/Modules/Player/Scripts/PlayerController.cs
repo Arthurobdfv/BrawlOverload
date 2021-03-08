@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using BrawlServer;
+using GameClient;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -51,5 +53,22 @@ public class PlayerController : MonoBehaviour
 
         m_playerVelocity.y -= Gravity * Time.deltaTime;
         m_controller.Move(m_playerVelocity * Time.deltaTime);
+    }
+
+    private void FixedUpdate()
+    {
+        SendInputToServer();
+    }
+
+    private void SendInputToServer()
+    {
+        bool[] inputs = new bool[]
+        {
+            Input.GetKey(KeyCode.W),
+            Input.GetKey(KeyCode.S),
+            Input.GetKey(KeyCode.A),    
+            Input.GetKey(KeyCode.D)
+        };
+        ((BrawlClientSender)Client._sender).PlayerMovement(inputs);
     }
 }

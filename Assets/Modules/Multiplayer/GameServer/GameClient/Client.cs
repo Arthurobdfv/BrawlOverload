@@ -11,12 +11,14 @@ namespace GameClient
         public static int dataBufferSize = 4096;
 
         public string ip = "127.0.0.1";
-        public int port = 3333;
+        public int port = 26950;
         public int myId = 0;
         public TCP tcp;
         public UDP udp;
 
         public static Client instance;
+
+        public bool isConnected = false;
 
         public static IClientSend _sender;
         public static IClientHandle _handler;
@@ -33,6 +35,18 @@ namespace GameClient
         public void ConnectedToServer()
         {
             tcp.Connect();
+            isConnected = true;
+        }
+        
+        public void Disconnect()
+        {
+            if (isConnected)
+            {
+                isConnected = false;
+                tcp.socket.Close();
+                udp.socket.Close();
+                Debug.Log("Disconnected From Server");
+            }
         }
 
         public class TCP
@@ -60,17 +74,30 @@ namespace GameClient
                     ReceiveBufferSize = dataBufferSize,
                     SendBufferSize = dataBufferSize
                 };
-
+                
                 recieveBuffer = new byte[dataBufferSize];
                 socket.BeginConnect(ip, port, ConnectCallback, socket);
 
+            }
+
+            private void Disconnect()
+            {
+                instance.Disconnect();
+                stream = null;
+                recievedData = null;
+                recieveBuffer = null;
+                socket = null;
             }
 
             private void ConnectCallback(IAsyncResult ar)
             {
                 socket.EndConnect(ar);
 
-                if (!socket.Connected) return;
+                if (!socket.Connected)
+                {
+                    Debug.Log($"Failed to connect with server");
+                    return;
+                }
 
                 recievedData = new Packet();
 
@@ -85,7 +112,8 @@ namespace GameClient
                     int _byteLength = stream.EndRead(ar);
                     if (_byteLength <= 0)
                     {
-                        //todo disconnect
+                        instance.Disconnect();
+                        return;
                     }
                     byte[] data = new byte[_byteLength];
                     Array.Copy(recieveBuffer, data, _byteLength);
@@ -96,7 +124,7 @@ namespace GameClient
                 catch (Exception e)
                 {
                     Console.WriteLine($"Error recieving TCP data: {e.Message}");
-                    //todo disconnect
+                    Disconnect();
 
                 }
             }
@@ -165,7 +193,7 @@ namespace GameClient
                 endPoint = new IPEndPoint(IPAddress.Parse(ip), port);
             }
 
-            
+
 
             public void Connect(int _localPort)
             {
@@ -179,6 +207,13 @@ namespace GameClient
                 {
                     SendData(_packet);
                 }
+            }
+
+            private void Disconnect()
+            {
+                instance.Disconnect();
+                endPoint = null;
+                socket = null;
             }
 
             public void SendData(Packet _packet)
@@ -207,7 +242,7 @@ namespace GameClient
                     socket.BeginReceive(RecieveCallback, null);
                     if (_data.Length < 4)
                     {
-                        //TODO Disconnect
+                        instance.Disconnect();
                         return;
                     }
 
@@ -215,7 +250,7 @@ namespace GameClient
                 }
                 catch (Exception e)
                 {
-                    //todo disconnect
+                    Disconnect();
                 }
             }
 

@@ -31,4 +31,15 @@ public class GameManager : MonoBehaviour
         players.Add(_id, plrMgr);
     }
 
+    private void OnApplicationQuit()
+    {
+        Client.instance.Disconnect();
+    }
+
+    public static void Disconnect(int id)
+    {
+        Destroy(players[id].gameObject);
+        players.Remove(id);
+    }
+
 }

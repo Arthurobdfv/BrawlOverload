@@ -2,6 +2,7 @@
 using GameClient;
 using GameServer;
 using GameServer.Common;
+using MapGeneration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,11 @@ namespace BrawlServer
                 return new Dictionary<int, Client.PacketHandler>()
                 {
                     {(int)BrawlServerPackets.Welcome, Welcome},
-                    {(int)BrawlServerPackets.Connect, SpawnPlayer }
+                    {(int)BrawlServerPackets.Connect, SpawnPlayer },
+                    {(int)BrawlServerPackets.PlayerPosition, PlayerPosition },
+                    {(int)BrawlServerPackets.PlayerRotation, PlayerRotation },
+                    {(int)BrawlServerPackets.Disconnect, PlayerDisconnect },
+                    {(int)BrawlServerPackets.MapTilesPositions, RecieveMap }
                 };
             }
         }
@@ -45,6 +50,40 @@ namespace BrawlServer
             Quaternion _rotation = _packet.ReadQuaternion();
 
             GameManager.instance.SpawnPlayer(id, userName, _position, _rotation);
+        }
+
+
+        private void PlayerPosition(Packet packet)
+        {
+            int id = packet.ReadInt();
+            Vector3 pos = packet.ReadVector3();
+
+            GameManager.players[id].transform.position = pos;
+        }
+
+        private void PlayerRotation(Packet packet)
+        {
+            int id = packet.ReadInt();
+            Quaternion rot = packet.ReadQuaternion();
+            Debug.Log("Recieved rotation " + rot);
+            GameManager.players[id].gameObject.transform.rotation = rot;
+        }
+
+        private void PlayerDisconnect(Packet packet)
+        {
+            int id = packet.ReadInt();
+            GameManager.Disconnect(id);
+        }
+
+        private void RecieveMap(Packet packet)
+        {
+            var length = packet.ReadInt();
+            var Pos = new Vector3[length];
+            for(int i=0; i<length; i++)
+            {
+                Pos[i] = packet.ReadVector3();
+            }
+            Injector.GetInstance<MapGenerator>()?.GenerateTerrain(Pos);
         }
 
 

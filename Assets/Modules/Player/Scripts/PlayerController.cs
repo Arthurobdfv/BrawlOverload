@@ -26,10 +26,14 @@ public class PlayerController : MonoBehaviour
         m_controller = GetComponent<CharacterController>() ?? throw new MissingComponentException(nameof(m_controller));
         m_footSensor = GetComponentInChildren<GroundChecker>() ?? throw new MissingComponentException(nameof(m_footSensor));
         m_manager = GetComponent<PlayerManager>() ?? throw new MissingComponentException(nameof(m_manager));
-        if (m_manager.id != Client.instance.myId) Destroy(this);
     }
 
     private void Update()
+    {
+
+    }
+
+    public void ManualMove()
     {
         m_isGrounded = m_footSensor.IsOverlapping;
         if (m_isGrounded && m_playerVelocity.y < 0)
@@ -57,6 +61,8 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (m_manager.id != Client.instance.myId) Destroy(this);
+        m_isGrounded = m_footSensor.IsOverlapping;
         SendInputToServer();
     }
 
@@ -66,9 +72,11 @@ public class PlayerController : MonoBehaviour
         {
             Input.GetKey(KeyCode.W),
             Input.GetKey(KeyCode.S),
-            Input.GetKey(KeyCode.A),    
-            Input.GetKey(KeyCode.D)
+            Input.GetKey(KeyCode.D),
+            Input.GetKey(KeyCode.A),
+            Input.GetKey(KeyCode.Space)
         };
-        ((BrawlClientSender)Client._sender).PlayerMovement(inputs);
+
+        ((BrawlClientSender)Client._sender).PlayerMovement(inputs, m_isGrounded);
     }
 }

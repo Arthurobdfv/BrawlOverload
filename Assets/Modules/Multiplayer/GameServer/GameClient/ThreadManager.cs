@@ -12,7 +12,7 @@ namespace GameClient
         private static readonly List<Action> executeCopiedOnMainThread = new List<Action>();
         private static bool actionToExecuteOnMainThread = false;
 
-        private void Update()
+        private void FixedUpdate()
         {
             UpdateMain();
         }

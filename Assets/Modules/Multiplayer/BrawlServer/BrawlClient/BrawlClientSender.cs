@@ -20,7 +20,7 @@ namespace BrawlServer
             }
         }
 
-        public void PlayerMovement(bool[] inputs)
+        public void PlayerMovement(bool[] inputs,bool isGrounded)
         {
             using (Packet _p = new Packet((int)BrawlClientPackets.PlayerMovement))
             {
@@ -30,6 +30,7 @@ namespace BrawlServer
                     _p.Write(input);
                 }
                 _p.Write(GameManager.players[Client.instance.myId].transform.rotation);
+                _p.Write(isGrounded);
                 SendUDPData(_p);
             }
         }

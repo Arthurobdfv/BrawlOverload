@@ -10,13 +10,19 @@ namespace BrawlServer.Common
     {
         Welcome = 1,
         Connect = 2,
-        PlayerMovement = 3
+        PlayerMovement = 3,
+        PlayerPosition = 4,
+        PlayerRotation = 5,
+        Disconnect = 6,
+        MapTilesPositions = 7
     }
 
     enum BrawlClientPackets
     {
         WelcomeRecieved = 1,
         ConnectRecieved = 2,
-        PlayerMovement = 3
+        PlayerMovement = 3,
+        PlayerPosition = 4,
+        PlayerRotation = 5
     }
 }

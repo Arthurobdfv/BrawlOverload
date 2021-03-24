@@ -15,8 +15,11 @@ namespace GameClient
 
         public void Handle(int _id, Packet _p)
         {
-            PacketHandler endPointHandler;
-            if (PacketHandlers.TryGetValue(_id, out endPointHandler)) endPointHandler(_p);
+            PacketHandler endPointHandler = null;
+            if (PacketHandlers.TryGetValue(_id, out endPointHandler))
+            {
+                endPointHandler(_p);
+            }
             else NoHandlerMatchFor(_id);
         }
 

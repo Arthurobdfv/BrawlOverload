@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace GameServer
+namespace GameServer.Common
 {
     public enum ServerPackets
     {

@@ -20,7 +20,7 @@ namespace MapGeneration
         private void Awake()
         {
             MapSize = 15;
-            GenerateTerrain();
+            Injector.RegisterContainer(this);
         }
 
         void GenerateTerrain()
@@ -32,6 +32,14 @@ namespace MapGeneration
                 var x = (int)Mathf.Floor(i / MapSize);
                 var z = (int)Mathf.Floor(i % MapSize);
                 map[x, z] = Instantiate(m_terrain, new Vector3(x, Mathf.Floor(heigths[x, z] * 10) / 2, z) + transform.position, Quaternion.identity);
+            }
+        }
+
+        public void GenerateTerrain(Vector3[] positions)
+        {
+            for(int i = 0; i<positions.Length; i++)
+            {
+                Instantiate(m_terrain, positions[i], Quaternion.identity, transform);
             }
         }
     }
